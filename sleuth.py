@@ -35,15 +35,15 @@ def parser_error(errmsg):
         sys.exit() 
 
 def msg(name=None):
-    	return ''' python sleuth.py option
-                example: python cairo.py s3
+    	return ''' python sleuth.py service command
+                example: python sleuth s3 list-bucktes
            '''
 
 def parse_args():
         parser = argparse.ArgumentParser(prog='Sleuth', description='AWS Tools', usage=msg())
         parser.error = parser_error
         parser._optionals.title = 'OPTIONS'
-        parser.add_argument('service', nargs='?', help='Type -h')
+        parser.add_argument('service', nargs='?', help='Service , can be EC2, S3 , etc')
         parser.add_argument('command', help='Command')
 	return parser.parse_args()
 
