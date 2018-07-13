@@ -93,4 +93,3 @@ def s3_list_buckets_ptable():
         return x.get_string()
 
 
-print s3_list_buckets_ptable()
