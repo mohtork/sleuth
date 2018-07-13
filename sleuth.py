@@ -7,7 +7,7 @@ from tools import s3
 #Check if we are running this on windows platform
 is_windows = sys.platform.startswith('win')
 
-#Console Colors print s3.s3_bucket_acl_ptable()
+#Console Colors
 if is_windows:
         G = Y = B = R = W = G = Y = B = R = W = '' #use no terminal colors on windows else:
         G = '\033[92m' #green
@@ -52,7 +52,7 @@ def Main():
         if args.service == 's3':
         	if args.command == 'list-permissions':
               		print s3.s3_bucket_acl_ptable()
-	elif args.service == 's3':
+	if args.service == 's3':
 		if args.command == 'list-buckets':
 			print s3.s3_list_buckets_ptable()
 	else:
