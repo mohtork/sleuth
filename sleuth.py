@@ -9,7 +9,8 @@ is_windows = sys.platform.startswith('win')
 
 #Console Colors
 if is_windows:
-        G = Y = B = R = W = G = Y = B = R = W = '' #use no terminal colors on windows else:
+        G = Y = B = R = W = G = Y = B = R = W = '' #use no terminal colors on windows 
+else:
         G = '\033[92m' #green
         Y = '\033[93m' #yellow
         B = '\033[94m' #blue
@@ -59,4 +60,5 @@ def Main():
 		print "ToRk Didn't Add any other options yet"
 
 if __name__ == '__main__':
+	banner()
         Main()
