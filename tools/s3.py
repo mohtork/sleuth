@@ -4,6 +4,8 @@ from prettytable import PrettyTable
 from blessings import Terminal
 from cloudwatsh import cw_s3_size as s3size
 
+s3client= boto3.client('s3')
+
 def s3_list_buckets():
 	bucket_list = []
 	s3 = boto3.resource('s3')
@@ -12,13 +14,11 @@ def s3_list_buckets():
 	return bucket_list
 
 def s3_get_region(bucket_name):
-	s3client= boto3.client('s3')
 	region= s3client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPHeaders']['x-amz-bucket-region']	
 	return region
 
 def s3_bucket_acl():
         bucket_list = s3_list_buckets()
-        s3client = boto3.client('s3')
 	dict={}
 	dict1={}
         for name in bucket_list:
