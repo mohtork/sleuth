@@ -56,6 +56,9 @@ def Main():
 	if args.service == 's3':
 		if args.command == 'list-buckets':
 			print s3.s3_list_buckets_ptable()
+	if args.service == 's3':
+		if args.command == 'bucket-size':
+			print s3.s3_size_ptable()
 	else:
 		print "ToRk Didn't Add any other options yet"
 

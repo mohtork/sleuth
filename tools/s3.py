@@ -2,6 +2,7 @@ import boto3
 import itertools
 from prettytable import PrettyTable
 from blessings import Terminal
+from cloudwatsh import cw_s3_size as s3size
 
 def s3_list_buckets():
 	bucket_list = []
@@ -9,6 +10,11 @@ def s3_list_buckets():
 	for bucket in s3.buckets.all():
 		bucket_list.append(bucket.name)
 	return bucket_list
+
+def s3_get_region(bucket_name):
+	s3client= boto3.client('s3')
+	region= s3client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPHeaders']['x-amz-bucket-region']	
+	return region
 
 def s3_bucket_acl():
         bucket_list = s3_list_buckets()
@@ -92,4 +98,16 @@ def s3_list_buckets_ptable():
 		x.add_row([bucket])
         return x.get_string()
 
+def s3_size_ptable():
+	x = PrettyTable(["Bucket Name", "Size in MB"])
+        x.align["Bucket Name"] = "l"
+        x.padding_width = 1
+	bucket_list=s3_list_buckets()
+	for bucket in bucket_list:
+		region= s3_get_region(bucket)
+		size= s3size(bucket, region)
+		if size == None:
+			size='No info'
+		x.add_row([bucket,size])
+        return x.get_string(sortby='Size in MB', reversesort=True)	
 
