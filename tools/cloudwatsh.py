@@ -20,6 +20,6 @@ def cw_s3_size(bucket, region):
 
 	for item in response["Datapoints"]:
 		size= item['Average']
-		sizeMB = size/1000/1000
+		sizeMB = size/1024/1024
 		return sizeMB
 		

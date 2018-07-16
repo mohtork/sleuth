@@ -59,6 +59,9 @@ def Main():
 	if args.service == 's3':
 		if args.command == 'bucket-size':
 			print s3.s3_size_ptable()
+	if args.service == 's3':
+		if args.command == 'count-files':
+			 print s3.s3_object_count_ptable()
 	else:
 		print "ToRk Didn't Add any other options yet"
 

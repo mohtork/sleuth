@@ -17,6 +17,13 @@ def s3_get_region(bucket_name):
 	region= s3client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPHeaders']['x-amz-bucket-region']	
 	return region
 
+def get_s3_keys(bucket):
+        keys = []
+        response = s3client.list_objects_v2(Bucket=bucket)
+        for object in response['Contents']:
+                keys.append(object['Key'])
+        return len(keys)
+
 def s3_bucket_acl():
         bucket_list = s3_list_buckets()
 	dict={}
@@ -107,7 +114,21 @@ def s3_size_ptable():
 		region= s3_get_region(bucket)
 		size= s3size(bucket, region)
 		if size == None:
-			size='No info'
+			size=0
 		x.add_row([bucket,size])
         return x.get_string(sortby='Size in MB', reversesort=True)	
+
+def s3_object_count_ptable():
+	bucket_list=s3_list_buckets()
+	x = PrettyTable(["Bucket Name", "Number of Files"])
+        x.align["Bucket Name"] = "l"
+        x.padding_width = 1
+	for bucket in bucket_list:
+		try:
+			count=get_s3_keys(bucket)
+		except KeyError:
+			count=0
+		x.add_row([bucket,count])
+	return x.get_string(sortby='Number of Files', reversesort=True)
+		
 
