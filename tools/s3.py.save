@@ -1,10 +1,8 @@
 import boto3
-import ast
 import itertools
 from prettytable import PrettyTable
 from blessings import Terminal
 from cloudwatsh import cw_s3_size as s3size
-from botocore.exceptions import ClientError, ParamValidationError
 
 s3client= boto3.client('s3')
 
@@ -20,11 +18,12 @@ def s3_get_region(bucket_name):
 	return region
 
 def get_s3_keys(bucket):
-        keys = []
+	keys = []
         response = s3client.list_objects_v2(Bucket=bucket)
         for object in response['Contents']:
-                keys.append(object['Key'])
+        	keys.append(obj['Key'])
         return len(keys)
+
 
 def s3_bucket_acl():
         bucket_list = s3_list_buckets()
@@ -44,29 +43,6 @@ def s3_bucket_acl():
 			dict1.setdefault('result', []).append(buckets)
 			dict.update(dict1)
 	return dict
-
-def s3_get_policy(bucket_name):
-        s3_policy_list=[]
-        try:
-                response = s3client.get_bucket_policy(
-                  Bucket=bucket_name
-                )
-
-
-                response_dict=ast.literal_eval(response[u'Policy'])
-                action=response_dict['Statement'][0]['Action']
-                princible=response_dict['Statement'][0]['Principal']
-                resource=response_dict['Statement'][0]['Resource']
-                effect=response_dict['Statement'][0]['Effect']
-                sid=response_dict['Statement'][0]['Sid']
-                s3_policy_list.extend([princible['AWS'], effect, sid])
-
-        except ClientError as e:
-		raise
-                #if "NoSuchBucketPolicy" in e.message:
-                #        print "No policy attached"
-        return s3_policy_list
-
 			
 
 def find(key, dictionary):
@@ -142,33 +118,4 @@ def s3_size_ptable():
 			size=0
 		x.add_row([bucket,size])
         return x.get_string(sortby='Size in MB', reversesort=True)	
-
-def s3_object_count_ptable():
-	bucket_list=s3_list_buckets()
-	x = PrettyTable(["Bucket Name", "Number of Files"])
-        x.align["Bucket Name"] = "l"
-        x.padding_width = 1
-	for bucket in bucket_list:
-		try:
-			count=get_s3_keys(bucket)
-		except KeyError:
-			count=0
-		x.add_row([bucket,count])
-	return x.get_string(sortby='Number of Files', reversesort=True)
-
-def s3_check_policy():
-	t = Terminal()
-	public_access=['*', 'Allow', 'AllowPublicRead']
-	bucket_list=s3_list_buckets()
-	for bucket in bucket_list:
-		try:
-			bucket_policy=s3_get_policy(bucket)
-			if bucket_policy==public_access:
-				print t.red("Attention! ")+ " Bucket "+ t.yellow(bucket) + " has public access"
-			elif bucket_policy!=public_access:
-				print t.green("Congratulation! ")+ "Bucket "+ t.yellow(bucket) + " has no public access"
-		except ClientError as e:
-			if "NoSuchBucketPolicy" in e.message:
-                        	print "No Policy attached for "+ t.yellow(bucket)  
-
 

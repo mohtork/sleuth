@@ -62,6 +62,9 @@ def Main():
 	if args.service == 's3':
 		if args.command == 'count-files':
 			 print s3.s3_object_count_ptable()
+	if args.service == 's3':
+		if args.command == 'check-policy':
+			s3.s3_check_policy()
 	else:
 		print "ToRk Didn't Add any other options yet"
 
