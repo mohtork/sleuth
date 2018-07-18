@@ -65,6 +65,15 @@ def Main():
 	if args.service == 's3':
 		if args.command == 'check-policy':
 			s3.s3_check_policy()
+	if args.service == 's3':
+		if args.command == 'fix-acl-permissions':
+			answer=raw_input('Are you sure?: Y/N ')
+			if answer=='Y' or answer=='y' or answer=='yes':
+				s3.s3_fix_acl_permission()
+			elif answer=='N' or answer=='n' or answer=='no':
+				print "Wise decision, you may want to change the permissions manually"
+			else:
+				print "wrong input"							
 	else:
 		print "ToRk Didn't Add any other options yet"
 

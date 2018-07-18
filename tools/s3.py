@@ -7,6 +7,7 @@ from cloudwatsh import cw_s3_size as s3size
 from botocore.exceptions import ClientError, ParamValidationError
 
 s3client= boto3.client('s3')
+s3resource = boto3.resource('s3')
 
 def s3_list_buckets():
 	bucket_list = []
@@ -14,6 +15,12 @@ def s3_list_buckets():
 	for bucket in s3.buckets.all():
 		bucket_list.append(bucket.name)
 	return bucket_list
+
+def s3_put_private_acl(bucket_name):
+	t = Terminal()
+        bucket=s3resource.Bucket(bucket_name)
+        bucket.Acl().put(ACL='private')
+	print t.green(bucket_name) + " public acl removed from Everyone group"
 
 def s3_get_region(bucket_name):
 	region= s3client.head_bucket(Bucket=bucket_name)['ResponseMetadata']['HTTPHeaders']['x-amz-bucket-region']	
@@ -170,5 +177,10 @@ def s3_check_policy():
 		except ClientError as e:
 			if "NoSuchBucketPolicy" in e.message:
                         	print "No Policy attached for "+ t.yellow(bucket)  
+
+def s3_fix_acl_permission():
+	bucket_list=s3_list_buckets()
+        for bucket in bucket_list:
+		s3_put_private_acl(bucket)
 
 
