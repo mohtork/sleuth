@@ -104,7 +104,7 @@ def s3_bucket_acl_check():
 			Permission= Permission+'_LOG'
 			permissions_dict.setdefault(Name, []).append(Permission)
 		else:
-			Permission= Permission+'_'+Account
+			Permission= Permission+'_'+str(Account)
 			permissions_dict.setdefault(Name, []).append(Permission)
 	return permissions_dict
 	
