@@ -35,22 +35,25 @@ def get_s3_keys(bucket):
 
 def s3_bucket_acl():
         bucket_list = s3_list_buckets()
-	dict={}
-	dict1={}
+        dict={}
+        dict1={}
+        ID_LIST=[]
         for name in bucket_list:
-		bucket_acl = s3client.get_bucket_acl(Bucket=name)
+                bucket_acl = s3client.get_bucket_acl(Bucket=name)
                 list =  bucket_acl.values()[1]
-        	for n in range(len(list)):
-        		index_number= n
-                	list_of_permissions = list[n]['Grantee']
-                	permissions = list[n]['Permission']
+                for n in range(len(list)):
+                        index_number= n
+                        list_of_permissions = list[n]['Grantee']
+                        permissions = list[n]['Permission']
                         URL = str(list_of_permissions.get('URI'))
-			Type = list_of_permissions.get('Type')
-			aws_id = list_of_permissions.get('DisplayName')
-			buckets = {'account': aws_id, 'name': name, 'url': URL, 'permission': permissions}
-			dict1.setdefault('result', []).append(buckets)
-			dict.update(dict1)
-	return dict
+                        Type = list_of_permissions.get('Type')
+                        aws_id = list_of_permissions.get('DisplayName')
+                        ID = list_of_permissions.get('ID')
+                        ID_LIST.append(ID)
+                        buckets = {'ID': ID, 'account': aws_id, 'name': name, 'url': URL, 'permission': permissions}
+                        dict1.setdefault('result', []).append(buckets)
+                        dict.update(dict1)
+        return dict , ID_LIST[0]
 
 def s3_get_policy(bucket_name):
         s3_policy_list=[]
@@ -90,23 +93,28 @@ def find(key, dictionary):
 
 
 def s3_bucket_acl_check():
-	acl= s3_bucket_acl()
-	find_url= list(find('url', acl))
-	l = []
-	permissions_dict={}
-	for index in range(len(find_url)):
-		Permission= acl['result'][index]['permission']
-        	Name= acl['result'][index]['name']
-        	Account= acl['result'][index]['account']
-		if "global/AllUsers" in find_url[index]:
-			permissions_dict.setdefault(Name, []).append(Permission)
-		elif "s3/LogDelivery" in find_url[index]:
-			Permission= Permission+'_LOG'
-			permissions_dict.setdefault(Name, []).append(Permission)
-		else:
-			Permission= Permission+'_'+str(Account)
-			permissions_dict.setdefault(Name, []).append(Permission)
-	return permissions_dict
+        acl= s3_bucket_acl()[0]
+        find_url= list(find('url', acl))
+        l = []
+        permissions_dict={}
+        for index in range(len(find_url)):
+                Permission= acl['result'][index]['permission']
+                Name= acl['result'][index]['name']
+                Account= acl['result'][index]['account']
+                ID= acl['result'][index]['ID']
+                if ID==s3_bucket_acl()[1]:
+                        Account='aws'
+                else:
+                        Account='admin'
+                if "global/AllUsers" in find_url[index]:
+                        permissions_dict.setdefault(Name, []).append(Permission)
+                elif "s3/LogDelivery" in find_url[index]:
+                        Permission= Permission+'_LOG'
+                        permissions_dict.setdefault(Name, []).append(Permission)
+                else:
+                        Permission= Permission+'_'+str(Account)
+                        permissions_dict.setdefault(Name, []).append(Permission)
+        return permissions_dict
 	
 
 def s3_bucket_acl_ptable():
@@ -125,7 +133,7 @@ def s3_bucket_acl_ptable():
 		S3LOG=[w.replace('_LOG', '') for w in S3LOG]
 		PERMISSIONS=["READ", "WRITE", "READ_ACP", "WRITE_ACP", "FULL_CONTROL"]
 		PUBLIC=[i for i in PERMISSIONS if i in acl_result[bucket_name]]
-		x.add_row([bucket_name, str(OWNER)[1:-1], str(ADMIN)[1:-1], str(S3LOG)[1:-1], str(PUBLIC)[1:-1] ])
+		x.add_row([bucket_name[:25], str(OWNER)[1:-1], str(ADMIN)[1:-1], str(S3LOG)[1:-1], str(PUBLIC)[1:-1] ])
 	return x.get_string()
 
 def s3_list_buckets_ptable():
