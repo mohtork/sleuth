@@ -27,11 +27,9 @@ def s3_get_region(bucket_name):
 	return region
 
 def get_s3_keys(bucket):
-        keys = []
-        response = s3client.list_objects_v2(Bucket=bucket)
-        for object in response['Contents']:
-                keys.append(object['Key'])
-        return len(keys)
+	paginator = s3client.get_paginator( "list_objects" )
+	page_iterator = paginator.paginate( Bucket = bucket)
+	return page_iterator
 
 def s3_bucket_acl():
         bucket_list = s3_list_buckets()
@@ -156,18 +154,23 @@ def s3_size_ptable():
 		x.add_row([bucket,size])
         return x.get_string(sortby='Size in MB', reversesort=True)	
 
+
 def s3_object_count_ptable():
-	bucket_list=s3_list_buckets()
-	x = PrettyTable(["Bucket Name", "Number of Files"])
+        bucket_list=s3_list_buckets()
+	bucket_object_list = []
+        x = PrettyTable(["Bucket Name", "Number of Files"])
         x.align["Bucket Name"] = "l"
         x.padding_width = 1
-	for bucket in bucket_list:
-		try:
-			count=get_s3_keys(bucket)
-		except KeyError:
-			count=0
-		x.add_row([bucket,count])
-	return x.get_string(sortby='Number of Files', reversesort=True)
+       	for bucket in bucket_list:
+		page_iterator=get_s3_keys(bucket)
+		for page in page_iterator:
+			if "Contents" in page:
+				for key in page['Contents']:
+					keyString = key['Key']
+					bucket_object_list.append(keyString)
+					count=len(bucket_object_list)
+                		x.add_row([bucket,count])
+       	return x.get_string(sortby='Number of Files', reversesort=True)
 
 def s3_check_policy():
 	t = Terminal()
