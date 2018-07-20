@@ -69,12 +69,10 @@ def s3_get_policy(bucket_name):
                 resource=response_dict['Statement'][0]['Resource']
                 effect=response_dict['Statement'][0]['Effect']
                 sid=response_dict['Statement'][0]['Sid']
-                s3_policy_list.extend([princible['AWS'], effect, sid])
+                s3_policy_list.extend([princible, effect])
 
-        except ClientError as e:
+        except (TypeError, ClientError) as e:
 		raise
-                #if "NoSuchBucketPolicy" in e.message:
-                #        print "No policy attached"
         return s3_policy_list
 
 			
@@ -173,7 +171,7 @@ def s3_object_count_ptable():
 
 def s3_check_policy():
 	t = Terminal()
-	public_access=['*', 'Allow', 'AllowPublicRead']
+	public_access=['*', 'Allow']
 	bucket_list=s3_list_buckets()
 	for bucket in bucket_list:
 		try:
@@ -184,7 +182,10 @@ def s3_check_policy():
 				print t.green("Congratulation! ")+ "Bucket "+ t.yellow(bucket) + " has no public access"
 		except ClientError as e:
 			if "NoSuchBucketPolicy" in e.message:
-                        	print "No Policy attached for "+ t.yellow(bucket)  
+                        	print "No Policy attached to "+ t.yellow(bucket)
+		except TypeError as e:
+			if "must be integers" in e.message:
+				print "I didn't get result for  "+ t.yellow(bucket)+ " please report this issue"  
 
 def s3_fix_acl_permission():
 	bucket_list=s3_list_buckets()
