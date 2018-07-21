@@ -1,5 +1,6 @@
 import boto3
 import ast
+import os
 import itertools
 from prettytable import PrettyTable
 from blessings import Terminal
@@ -112,6 +113,23 @@ def s3_bucket_acl_check():
                         permissions_dict.setdefault(Name, []).append(Permission)
         return permissions_dict
 	
+def s3_download_AllFiles_bucket(bucket_name,tmpdir):
+	path=os.path.join(tmpdir, bucket_name)
+	try:
+		if not os.path.exists(path):
+			os.makedirs(path)
+	except OSError as e:
+   		raise
+	for obj in s3client.list_objects(Bucket=bucket_name)['Contents']:
+                filename = obj['Key']
+                if filename.endswith('/'):
+                        directory = os.path.join(path, filename)
+                        os.makedirs(directory)
+
+                else:
+                        localfilename = os.path.join(path, filename)
+                        s3client.download_file(bucket_name, obj['Key'], localfilename)
+
 
 def s3_bucket_acl_ptable():
 	x = PrettyTable(["Bucket Name", "Owner Permissions", "Admin Permissions", "S3 Log", "Public"])

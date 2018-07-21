@@ -45,6 +45,8 @@ def parse_args():
         parser._optionals.title = 'OPTIONS'
         parser.add_argument('service', nargs='?', help='Service , can be EC2, S3 , etc')
         parser.add_argument('command', help='Command')
+	parser.add_argument('bucket', help='Provide Bucket Name')
+	parser.add_argument('path', help='Provide directory path')
 	return parser.parse_args()
 
 
@@ -74,9 +76,16 @@ def Main():
 				print "Wise decision, you may want to change the permissions manually"
 			else:
 				print "wrong input"							
-	else:
-		print "ToRk Didn't Add any other options yet"
-
+	if args.service == 's3':
+		if args.command == 'download':
+			try:
+				bucket_name=args.bucket
+				tmpdir=args.path
+				s3.s3_download_AllFiles_bucket(bucket_name,tmpdir) 
+				print "All "+bucket_name+" bucket files has been downloaded to "+tmpdir
+			except OSError as e:
+				if "File exists" in e:
+					print "Directory "+tmpdir+"/"+bucket_name+" already exist" 
 if __name__ == '__main__':
 	banner()
         Main()
