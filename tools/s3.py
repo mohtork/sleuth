@@ -5,6 +5,7 @@ import itertools
 from prettytable import PrettyTable
 from blessings import Terminal
 from cloudwatsh import cw_s3_size as s3size
+from clamav import av_scan_s3 as av 
 from botocore.exceptions import ClientError, ParamValidationError
 
 s3client= boto3.client('s3')

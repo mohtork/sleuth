@@ -2,7 +2,11 @@
 import sys
 import argparse
 from tools import s3
+from tools import clamav as av
+from blessings import Terminal
 
+
+t = Terminal()
 
 #Check if we are running this on windows platform
 is_windows = sys.platform.startswith('win')
@@ -85,7 +89,16 @@ def Main():
 				print "All "+bucket_name+" bucket files has been downloaded to "+tmpdir
 			except OSError as e:
 				if "File exists" in e:
-					print "Directory "+tmpdir+"/"+bucket_name+" already exist" 
+					print "Directory "+tmpdir+"/"+bucket_name+" already exist"
+	if args.service== 's3':
+		if args.command == 'scan':
+			bucket_name=args.bucket
+			tmpdir=args.path
+			s3.s3_download_AllFiles_bucket(bucket_name,tmpdir)
+			av.av_scan_s3(tmpdir, bucket_name)
+			if av.av_scan_s3(tmpdir, bucket_name)== None:
+				print t.green('Great :) ')+'your bucket is clean'
+			 
 if __name__ == '__main__':
 	banner()
         Main()
