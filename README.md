@@ -16,7 +16,9 @@ Get reports about S3 buckets to easily identify
 
 
 # Requirements
-- ClamAV (https://goo.gl/fR81Mz)
+- ClamAV (https://goo.gl/fR81Mz)<br/>
+- Create IAM user with S3 Full Permissions<br/>
+- Configure AWS CLI (https://goo.gl/xhA5mR)
 
 # Commands
 - List Buckets<br/>
