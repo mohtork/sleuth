@@ -1,0 +1,5 @@
+botocore==1.10.34
+pyClamd==0.4.0
+blessings==1.7
+prettytable==0.7.2
+boto3==1.7.24
