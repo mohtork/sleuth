@@ -40,8 +40,8 @@ python sleuth.py s3 count-files
 python sleuth.py s3 fix-acl-permissions
 ```
 - Download bucket files to you machine or a server<br/>
-
-```python sleuth.py s3 download bucket_name download_dir_path<br/>
+```
+python sleuth.py s3 download bucket_name download_dir_path<br/>
 ```
 example: python sleuth.py s3 download linuxdirection /backup<br/>
 linuxdirection: bucketname<br/>
