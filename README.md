@@ -10,7 +10,7 @@ Get reports about S3 buckets to easily identify
 1. Infected files (download and scan bucket files with clamAV)
 2. Which buckets have public access 
 3. Buckets size in MB
-4. Number of files in each backet
+4. Number of files in each bucket
 5. Check & fix public policy
 6. Download bucket files to your machine
 
